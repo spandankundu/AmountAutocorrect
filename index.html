@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheque Amount Converter</title>
+</head>
+<body>
+    <h1>Cheque Amount Converter</h1>
+    <form id="convert-form" method="POST">
+        <label for="amount_in_words">Amount in Words:</label>
+        <input type="text" id="amount_in_words" name="amount_in_words" placeholder="e.g., forty three thousand" required>
+        <button type="submit">Convert</button>
+    </form>
+    <div id="result" style="margin-top: 20px; display: none;">
+        <h3>Converted Details:</h3>
+        <p><strong>Corrected Words:</strong> <span id="corrected-words"></span></p>
+        <p><strong>Converted Number:</strong> <span id="result-number"></span></p>
+    </div>
+    <script>
+        document.getElementById('convert-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const words = document.getElementById('amount_in_words').value;
+            const response = await fetch('/convert', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ amount_in_words: words })
+            });
+            const data = await response.json();
+            const resultDiv = document.getElementById('result');
+            const correctedWordsSpan = document.getElementById('corrected-words');
+            const resultNumberSpan = document.getElementById('result-number');
+            if (data.success) {
+                resultDiv.style.display = 'block';
+                correctedWordsSpan.textContent = data.corrected_words;
+                resultNumberSpan.textContent = data.number;
+            } else {
+                alert(data.error || 'An error occurred.');
+            }
+        });
+    </script>
+</body>
+</html>
